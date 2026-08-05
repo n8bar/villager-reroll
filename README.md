@@ -3,17 +3,20 @@
 A public, server-only Forge mod for Minecraft 1.20.1. Players can pay to rebuild
 a villager's unlocked trade offers without replacing the villager or installing anything client-side.
 
-> **Current status:** MVP implemented and build-tested. A disposable dedicated Forge server loads and
-> starts with the mod. It has not been installed on a production server or tested by a real client yet.
+> **Current status:** 0.2.0 development candidate. The earlier 0.1 live test passed; these partial-tier
+> and Trade Retraining Manual changes are not deployed.
 
 ## Player experience
 
-1. Hold the configured payment item. The provisional/default payment is **one Emerald Block**
-   (`minecraft:emerald_block`); both item and count will be server-configurable.
-2. Sneak-right-click an eligible villager. The server names the price and asks for confirmation; it
-   does not consume payment or alter offers.
+1. Craft a genuine **Trade Retraining Manual** from eight emeralds surrounding one Book and Quill.
+   The result carries a survival-unforgeable namespaced marker, gold name, and hidden-enchantment glint; renaming
+   an ordinary book cannot counterfeit it. Master librarians also sell one for eight emeralds plus
+   one Book and Quill (six uses, 30 villager XP, normal restocking).
+2. Hold the manual and sneak-right-click an eligible villager. The server prepares the exact offers
+   once, names preserved tiers, price, and timeout, and caches that plan without taking payment.
 3. Sneak-right-click that **same villager** again within **10 seconds (200 server ticks)**.
-4. If every condition still passes, the server atomically consumes payment and replaces the offers.
+4. If every condition still passes, the server consumes one genuine manual and commits the cached
+   plan. Tiers unable to produce two valid offers keep deep-copied, serialized-equivalent old trades.
    Success gets restrained chat/sound feedback. Expiry or any failed check cancels without charge.
 
 Normal right-click remains normal trading. Confirmation is bound to player UUID + villager UUID, so
@@ -26,16 +29,20 @@ rotation, dimension, custom name, profession, biome type, villager level, villag
 effects, equipment, age, inventory, gossip/reputation, brain/memories, job site, home, restock data,
 persistence, leash/passenger state, and every other field outside its merchant-offer list.
 
-Only `Villager#getOffers()` is replaced. Every old offer is discarded, including its ingredients,
+Only `Villager#getOffers()` is replaced. Every rerolled offer is discarded, including its ingredients,
 result, uses, maximum uses, demand, special price, price multiplier, merchant XP reward, and
 reward-XP flag. New offers begin with their freshly generated vanilla/modded values and zero uses.
 Player reputation and gossip stay on the villager and may still affect prices through normal game
 logic; old offer-local discounts and demand do not survive.
 
-The replacement contains **exactly two newly generated offers for each unlocked profession tier**,
-from Novice through the villager's current level. Locked future tiers are not generated. If any
-unlocked tier cannot yield two valid offers, the operation aborts before payment or mutation; it
-never leaves a partial offer set.
+The replacement contains two newly generated offers for every safely rerollable unlocked tier.
+Short, null, or throwing tiers preserve their serialized offers and ordering. A versioned ledger
+records tier counts and structural signatures while ignoring mutable restock fields. Legacy villagers
+are spliced only when vanilla chronological boundaries are provable from profession, level, exact
+offer total, and current tier caps; ambiguous layouts refuse without payment.
+The new Manual trade makes the current Master-librarian cap 10. Pre-0.2 nine-offer Masters therefore
+cannot use legacy partial inference against that new cap; they may still take a safe full reroll,
+which establishes the ledger, but any partial failure refuses until provenance is proven.
 
 ## Safeguards
 
@@ -76,7 +83,7 @@ No release should be published until the roadmap's gameplay and dedicated-server
 ## Roadmap
 
 - [x] ForgeGradle/Java 17 project scaffold and server-only compatibility metadata
-- [x] Validated per-world Forge server config for payment item/count and confirmation timeout
+- [x] Per-world confirmation timeout and marker-authenticated fixed Manual payment policy
 - [x] Final vanilla+modded trade-pool snapshot and atomic offer-list builder
 - [x] Two-step interaction state machine and concurrency guard
 - [x] Feedback, cancellation hooks, and public cancellable pre-reroll event

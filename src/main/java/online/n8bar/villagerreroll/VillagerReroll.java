@@ -20,6 +20,7 @@ public final class VillagerReroll {
     public VillagerReroll() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, VillagerRerollConfig.SPEC);
         MinecraftForge.EVENT_BUS.register(new VillagerRerollService());
+        MinecraftForge.EVENT_BUS.register(RetrainingManual.class);
         LOGGER.info("Villager Reroll loaded (server-authoritative; clients do not require the mod)");
     }
 }

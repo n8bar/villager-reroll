@@ -16,14 +16,19 @@ public final class VillagerPreRerollEvent extends Event {
     private final Item paymentItem;
     private final int paymentCount;
     private final List<MerchantOffer> proposedOffers;
+    private final List<Integer> rerolledTiers;
+    private final List<Integer> preservedTiers;
 
     public VillagerPreRerollEvent(ServerPlayer player, Villager villager, Item paymentItem,
-            int paymentCount, List<MerchantOffer> proposedOffers) {
+            int paymentCount, List<MerchantOffer> proposedOffers, List<Integer> rerolledTiers,
+            List<Integer> preservedTiers) {
         this.player = player;
         this.villager = villager;
         this.paymentItem = paymentItem;
         this.paymentCount = paymentCount;
         this.proposedOffers = List.copyOf(proposedOffers);
+        this.rerolledTiers = List.copyOf(rerolledTiers);
+        this.preservedTiers = List.copyOf(preservedTiers);
     }
 
     public ServerPlayer getPlayer() { return player; }
@@ -32,4 +37,6 @@ public final class VillagerPreRerollEvent extends Event {
     public int getPaymentCount() { return paymentCount; }
     /** Structurally immutable proposal; individual vanilla offers remain readable trade objects. */
     public List<MerchantOffer> getProposedOffers() { return proposedOffers; }
+    public List<Integer> getRerolledTiers() { return rerolledTiers; }
+    public List<Integer> getPreservedTiers() { return preservedTiers; }
 }

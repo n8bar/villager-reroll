@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["EEE", "EBE", "EEE"],
+  "key": {
+    "E": { "item": "minecraft:emerald" },
+    "B": { "item": "minecraft:writable_book" }
+  },
+  "result": {
+    "item": "minecraft:writable_book",
+    "count": 1,
+    "nbt": "{\"villager_reroll:trade_retraining_manual\":1b,display:{Name:'{\"text\":\"Trade Retraining Manual\",\"color\":\"gold\",\"italic\":false}'},Enchantments:[{id:\"minecraft:unbreaking\",lvl:1s}],HideFlags:1}"
+  },
+  "show_notification": true
+}

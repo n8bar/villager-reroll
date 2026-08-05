@@ -6,15 +6,12 @@ This document describes the implemented MVP and the remaining test boundary.
 
 ### Configuration
 
-`VillagerRerollConfig` will define a server config with:
+`VillagerRerollConfig` defines a per-world server config with:
 
-- `paymentItem` registry id, default `minecraft:emerald_block`;
-- `paymentCount`, default `1`, bounded to a practical stack-sized range;
 - `confirmationTicks`, default and hard maximum `200` unless later design work justifies otherwise;
 - optional interaction range and feedback controls with conservative bounds.
 
-Configuration must resolve the item through Forge registries and reject air, missing ids, nonpositive
-counts, or a count larger than the chosen item's stack limit.
+Payment is fixed policy: one server-authenticated Trade Retraining Manual.
 
 ### Trade pool capture
 
@@ -32,17 +29,20 @@ Given a server-side villager, read its profession and current level. For every t
 3. invoke listings until two distinct candidate slots yield non-null `MerchantOffer`s;
 4. collect exactly two offers in tier order.
 
-Build the entire `MerchantOffers` value off to the side. If any tier lacks enough valid listings or
-returns fewer than two offers, fail without charging or mutating. A future implementation must define
-whether two different listings producing identical visible offers are acceptable; the safe initial
-policy is to require different listing entries, not attempt brittle ItemStack-level deduplication.
+Build the entire plan on the first click and cache it. For short, null, or throwing tiers, the plan
+preserves serialized-equivalent copies of the old offers. A versioned ledger proves boundaries with
+profession, level, tier counts, and structural signatures that omit uses, demand, and special price.
+Legacy positional inference is
+allowed only for vanilla professions when the exact offer total equals the chronological sum of
+`min(2, current pool size)` for every unlocked tier; ambiguous partial splices refuse without charge.
+Level changes invalidate the ledger rather than guessing at appended boundaries; a subsequent full
+reroll may safely establish a new ledger, while a partial reroll must pass the legacy proof.
 
 ### Confirmation service
 
-Hold an in-memory map keyed by player UUID with villager UUID, dimension key, and expiry game time.
-The first valid sneak/main-hand interaction creates or replaces that entry and returns a confirmation
-message. The second matching interaction inside 200 ticks enters the transaction. Expired or invalid
-entries are removed eagerly and by a bounded periodic sweep.
+Hold an in-memory prepared plan keyed by player UUID with villager UUID, dimension, full Offers NBT
+fingerprint, profession, level, payment policy, and expiry. The first click consumes RNG exactly once;
+the second commits that same plan only if every captured field remains fresh.
 
 ### Atomic transaction
 
@@ -50,7 +50,7 @@ All work runs on the logical server thread:
 
 1. acquire a short-lived reservation keyed by villager UUID;
 2. repeat every eligibility, proximity, identity, and payment check;
-3. build the complete replacement `MerchantOffers`;
+3. validate the cached replacement `MerchantOffers` and full old-offer fingerprint;
 4. post a cancellable pre-reroll event containing player, villager, price, and proposed offers;
 5. remove the exact payment from the player's inventory, unless an explicitly designed Creative-mode
    exemption is added later;
@@ -75,7 +75,8 @@ gameplay code must not reference client-only classes or register a network chann
 - Name, UUID, profession/type/level/XP, gossip, brain, inventory, health, location, and restock fields
   byte-for-byte or semantically unchanged as appropriate; only offers differ.
 - Fresh offers have zero uses and no leaked demand/special-price state from old offers.
-- Null/short/modded trade pools abort without mutation or charge.
+- Null/short/throwing tiers preserve proven old tier offers; ambiguous provenance or a complete no-op
+  refuses without mutation or charge.
 - Two players confirm the same villager in the same tick; at most one transaction commits.
 - Main/off-hand event duplication cannot double-charge or double-reroll.
 - Restart/reload leaves no stale pending confirmation.

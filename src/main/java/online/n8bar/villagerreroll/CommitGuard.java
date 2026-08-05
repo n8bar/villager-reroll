@@ -16,6 +16,12 @@ final class CommitGuard {
         lastSuccessTick.put(villager, now);
     }
 
+    void expireBefore(long oldestTick) {
+        lastSuccessTick.values().removeIf(tick -> tick < oldestTick);
+    }
+
+    int size() { return lastSuccessTick.size(); }
+
     void clearAll() {
         lastSuccessTick.clear();
     }
