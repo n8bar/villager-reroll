@@ -1,7 +1,6 @@
 # Design specification
 
-This document describes intended behavior. No class beyond the minimal mod entry point implements it
-yet.
+This document describes the implemented MVP and the remaining test boundary.
 
 ## Components
 
@@ -65,8 +64,9 @@ avoid consuming payment. The implementation must include failure-injection tests
 
 The likely entry point is Forge's player/entity interaction event. Filter logical client calls,
 off-hand duplicates, non-sneaking interactions, and non-villagers before doing work. Cancel only the
-handled sneak interaction so ordinary trading remains untouched. `displayTest="IGNORE_SERVER_VERSION"`
-allows clients without the mod to connect; gameplay code must not reference client-only classes.
+handled sneak interaction so ordinary trading remains untouched. `displayTest="IGNORE_ALL_VERSION"`
+is Forge 47.2.0's server-only compatibility setting and allows clients without the mod to connect;
+gameplay code must not reference client-only classes or register a network channel.
 
 ## Test matrix before calling it implemented
 

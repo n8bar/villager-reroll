@@ -1,12 +1,12 @@
 # Villager Reroll
 
-A planned public, server-only Forge mod for Minecraft 1.20.1. Players will be able to pay to rebuild
+A public, server-only Forge mod for Minecraft 1.20.1. Players can pay to rebuild
 a villager's unlocked trade offers without replacing the villager or installing anything client-side.
 
-> **Current status:** honest compileable scaffold only. The Forge entry point and metadata exist;
-> reroll gameplay, configuration, tests, and release artifacts do not.
+> **Current status:** MVP implemented and build-tested. A disposable dedicated Forge server loads and
+> starts with the mod. It has not been installed on a production server or tested by a real client yet.
 
-## Planned player experience
+## Player experience
 
 1. Hold the configured payment item. The provisional/default payment is **one Emerald Block**
    (`minecraft:emerald_block`); both item and count will be server-configurable.
@@ -19,7 +19,7 @@ a villager's unlocked trade offers without replacing the villager or installing 
 Normal right-click remains normal trading. Confirmation is bound to player UUID + villager UUID, so
 clicking a different villager starts that villager's own confirmation instead of approving the first.
 
-## Exact planned state semantics
+## Exact state semantics
 
 The existing villager entity remains aboard. A successful reroll preserves its UUID, position,
 rotation, dimension, custom name, profession, biome type, villager level, villager XP, health,
@@ -37,7 +37,7 @@ from Novice through the villager's current level. Locked future tiers are not ge
 unlocked tier cannot yield two valid offers, the operation aborts before payment or mutation; it
 never leaves a partial offer set.
 
-## Planned safeguards
+## Safeguards
 
 - Dedicated-server authority only; no packet, screen, keybind, model, or client installation.
 - Handle the Forge entity-interaction event once for the main hand and only while sneaking.
@@ -75,17 +75,18 @@ No release should be published until the roadmap's gameplay and dedicated-server
 
 ## Roadmap
 
-- [x] ForgeGradle/Java 17 project scaffold and server-optional client metadata
-- [ ] Validated Forge server config for payment item/count and confirmation timeout
-- [ ] Trade-pool capture and deterministic, atomic offer-list builder
-- [ ] Two-step interaction state machine and concurrency guard
-- [ ] Feedback, cancellation hooks, and public integration event
-- [ ] Unit tests for selection/state logic and GameTests for payment/mutation boundaries
+- [x] ForgeGradle/Java 17 project scaffold and server-only compatibility metadata
+- [x] Validated per-world Forge server config for payment item/count and confirmation timeout
+- [x] Final vanilla+modded trade-pool snapshot and atomic offer-list builder
+- [x] Two-step interaction state machine and concurrency guard
+- [x] Feedback, cancellation hooks, and public cancellable pre-reroll event
+- [x] Unit tests for confirmation state and shuffle boundaries
+- [ ] GameTests for payment/mutation and villager-state preservation boundaries
 - [ ] Dedicated-server test with a client lacking the mod
 - [ ] Compatibility tests with vanilla professions and modded trade-pool contributors
 - [ ] Reobfuscated release jar, changelog, and public repository release
 
 ## Contributing
 
-Issues and pull requests will be welcome after the public repository exists. Until gameplay lands,
-please treat this as a design scaffold, not a usable mod.
+Issues and pull requests are welcome. Until the client and GameTest rows above pass, treat this as an
+MVP candidate rather than a production release.
