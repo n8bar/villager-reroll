@@ -9,7 +9,7 @@
   "result": {
     "item": "minecraft:writable_book",
     "count": 1,
-    "nbt": "{\"villager_reroll:trade_retraining_manual\":1b,display:{Name:'{\"text\":\"Trade Retraining Manual\",\"color\":\"gold\",\"italic\":false}'},Enchantments:[{id:\"minecraft:unbreaking\",lvl:1s}],HideFlags:1}"
+    "nbt": "{\"villager_reroll:trade_retraining_manual\":1b,display:{Name:'{\"italic\":false,\"color\":\"gold\",\"text\":\"Trade Retraining Manual\"}',Lore:['{\"italic\":false,\"color\":\"gray\",\"text\":\"Right-click air to read\"}']},Enchantments:[{id:\"minecraft:unbreaking\",lvl:1s}],HideFlags:1,pages:['TRADE RETRAINING\n\nSneak + left-click an adult employed villager.\n\nOne Manual is spent only when trades change.\nUnswappable trades stay.\n\nDo not sign this book.']}"
   },
   "show_notification": true
 }

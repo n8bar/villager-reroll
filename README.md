@@ -3,8 +3,8 @@
 A public, server-only Forge mod for Minecraft 1.20.1. Players can pay to rebuild
 a villager's unlocked trade offers without replacing the villager or installing anything client-side.
 
-> **Current status:** 0.2.0 development candidate. The earlier 0.1 live test passed; these partial-tier
-> and Trade Retraining Manual changes are not deployed.
+> **Current status:** 0.3.0 development candidate. The deployed 0.2 live test remains unchanged;
+> this one-click attack-gate UX is not deployed.
 
 ## Player experience
 
@@ -12,15 +12,16 @@ a villager's unlocked trade offers without replacing the villager or installing 
    The result carries a survival-unforgeable namespaced marker, gold name, and hidden-enchantment glint; renaming
    an ordinary book cannot counterfeit it. Master librarians also sell one for eight emeralds plus
    one Book and Quill (six uses, 30 villager XP, normal restocking).
-2. Hold the manual and sneak-right-click an eligible villager. The server prepares the exact offers
-   once, names preserved tiers, price, and timeout, and caches that plan without taking payment.
-3. Sneak-right-click that **same villager** again within **10 seconds (200 server ticks)**.
-4. If every condition still passes, the server consumes one genuine manual and commits the cached
-   plan. Tiers unable to produce two valid offers keep deep-copied, serialized-equivalent old trades.
+2. Hold the Manual, sneak, and **left-click once** on an adult employed villager. Forge cancels the
+   attack at its earliest hook, before damage, knockback, crits, sweep, fire, durability, exhaustion,
+   statistics, villager panic/gossip, or golem anger.
+3. The server builds one local plan, validates it before and after the public event, and spends one
+   Manual only when at least one trade changes. Unswappable tiers keep serialized-equivalent trades.
    Success gets restrained chat/sound feedback. Expiry or any failed check cancels without charge.
 
-Normal right-click remains normal trading. Confirmation is bound to player UUID + villager UUID, so
-clicking a different villager starts that villager's own confirmation instead of approving the first.
+Normal right-click remains trading. Ordinary attacks and genuine-Manual attacks on non-villagers
+remain vanilla behavior. A non-sneaking Manual left-click on a villager is canceled without damage,
+payment, or retraining and reminds the player to sneak.
 
 ## Exact state semantics
 
@@ -47,16 +48,15 @@ which establishes the ledger, but any partial failure refuses until provenance i
 ## Safeguards
 
 - Dedicated-server authority only; no packet, screen, keybind, model, or client installation.
-- Handle the Forge entity-interaction event once for the main hand and only while sneaking.
+- Handle Forge `AttackEntityEvent` at highest priority and cancel immediately for every genuine-Manual
+  attack on a villager; begin the transaction only when the player is sneaking.
 - Require an adult `Villager`, a real profession (not unemployed or nitwit), and at least one unlocked
   tier. Reject dead/removed villagers and villagers already trading with another player.
-- On confirmation, re-check same player, same villager UUID, deadline, dimension, range, line of
-  sight, eligibility, offer sources, and payment. Never trust the first click's state.
+- Re-check villager identity, profession/level, range, line of sight, eligibility, full Offers NBT,
+  event proposal, and genuine Manual before charging.
 - Reserve a villager during the final server-thread transaction so two players cannot both pay for
   the same reroll. Consume only after a complete replacement offer list has been built in memory.
-- Clear pending confirmations on expiry, logout, death, and dimension change. Do not save transient
-  confirmations to world/player data.
-- Use server config validation, bounded counts, registry-backed item parsing, and restrained logging.
+- Use bounded counts, registry-backed item parsing, and restrained logging.
 - Fire a cancellable mod event before payment/mutation so protection or economy integrations can veto.
 
 ## Compatibility target
@@ -83,11 +83,11 @@ No release should be published until the roadmap's gameplay and dedicated-server
 ## Roadmap
 
 - [x] ForgeGradle/Java 17 project scaffold and server-only compatibility metadata
-- [x] Per-world confirmation timeout and marker-authenticated fixed Manual payment policy
+- [x] Marker-authenticated fixed Manual payment policy
 - [x] Final vanilla+modded trade-pool snapshot and atomic offer-list builder
 - [x] Two-step interaction state machine and concurrency guard
 - [x] Feedback, cancellation hooks, and public cancellable pre-reroll event
-- [x] Unit tests for confirmation state and shuffle boundaries
+- [x] Unit tests for attack trigger, transaction messages, Manual NBT, and shuffle boundaries
 - [ ] GameTests for payment/mutation and villager-state preservation boundaries
 - [ ] Dedicated-server test with a client lacking the mod
 - [ ] Compatibility tests with vanilla professions and modded trade-pool contributors

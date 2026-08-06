@@ -15,20 +15,42 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 final class RetrainingManual {
     private static final String MARKER = VillagerReroll.MOD_ID + ":trade_retraining_manual";
+    static final String INSTRUCTIONS = "TRADE RETRAINING\n\n"
+            + "Sneak + left-click an adult employed villager.\n\n"
+            + "One Manual is spent only when trades change.\n"
+            + "Unswappable trades stay.\n\n"
+            + "Do not sign this book.";
     private RetrainingManual() { }
 
     static ItemStack create() {
         ItemStack stack = new ItemStack(Items.WRITABLE_BOOK);
-        stampMarker(stack.getOrCreateTag());
-        stack.setHoverName(Component.literal("Trade Retraining Manual").withStyle(ChatFormatting.GOLD));
+        stack.setTag(canonicalTag());
+        return stack;
+    }
+
+    static CompoundTag canonicalTag() {
+        CompoundTag tag = new CompoundTag();
+        stampMarker(tag);
         ListTag enchantments = new ListTag();
         CompoundTag glint = new CompoundTag();
         glint.putString("id", "minecraft:unbreaking");
         glint.putShort("lvl", (short) 1);
         enchantments.add(glint);
-        stack.getOrCreateTag().put("Enchantments", enchantments);
-        stack.getOrCreateTag().putInt("HideFlags", stack.getOrCreateTag().getInt("HideFlags") | 1);
-        return stack;
+        tag.put("Enchantments", enchantments);
+        tag.putInt("HideFlags", 1);
+        CompoundTag display = new CompoundTag();
+        display.putString("Name", Component.Serializer.toJson(Component.literal("Trade Retraining Manual")
+                .withStyle(ChatFormatting.GOLD).withStyle(style -> style.withItalic(false))));
+        ListTag lore = new ListTag();
+        lore.add(StringTag.valueOf(Component.Serializer.toJson(Component.literal("Right-click air to read")
+                .withStyle(ChatFormatting.GRAY).withStyle(style -> style.withItalic(false)))));
+        display.put("Lore", lore);
+        tag.put("display", display);
+        ListTag pages = new ListTag();
+        // Writable-book pages are plain text. Signed books alone use JSON components.
+        pages.add(StringTag.valueOf(INSTRUCTIONS));
+        tag.put("pages", pages);
+        return tag;
     }
 
     static boolean isGenuine(ItemStack stack) {
