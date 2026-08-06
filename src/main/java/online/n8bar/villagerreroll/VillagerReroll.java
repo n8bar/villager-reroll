@@ -1,14 +1,14 @@
 package online.n8bar.villagerreroll;
 
 import com.mojang.logging.LogUtils;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import org.slf4j.Logger;
 
 /**
  * Forge entry point.
  *
- * <p>This initial project intentionally contains no reroll event handler. It proves the mod metadata
- * and build plumbing before gameplay behavior is added and tested.</p>
+ * <p>All gameplay runs on the logical server through Forge events; clients need no copy.</p>
  */
 @Mod(VillagerReroll.MOD_ID)
 public final class VillagerReroll {
@@ -16,6 +16,8 @@ public final class VillagerReroll {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public VillagerReroll() {
-        LOGGER.info("Villager Reroll scaffold loaded; gameplay behavior is not implemented yet");
+        MinecraftForge.EVENT_BUS.register(new VillagerRerollService());
+        MinecraftForge.EVENT_BUS.register(RetrainingManual.class);
+        LOGGER.info("Villager Reroll loaded (server-authoritative; clients do not require the mod)");
     }
 }
