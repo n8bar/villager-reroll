@@ -63,8 +63,10 @@ final class RetrainingManual {
     @SubscribeEvent
     public static void addLibrarianTrade(VillagerTradesEvent event) {
         if (event.getType() != net.minecraft.world.entity.npc.VillagerProfession.LIBRARIAN) return;
-        event.getTrades().get(5).add((trader, random) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 8), new ItemStack(Items.WRITABLE_BOOK), create(),
-                6, 30, 0.05f));
+        event.getTrades().get(5).add((trader, random) -> createLibrarianOffer());
+    }
+
+    static MerchantOffer createLibrarianOffer() {
+        return new MerchantOffer(new ItemStack(Items.EMERALD, 12), create(), 6, 30, 0.05f);
     }
 }

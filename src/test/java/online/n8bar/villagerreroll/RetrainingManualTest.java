@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.SharedConstants;
 import net.minecraft.server.Bootstrap;
+import net.minecraft.world.item.Items;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -44,5 +45,16 @@ class RetrainingManualTest {
             assertEquals(RetrainingManual.INSTRUCTIONS,recipe.getList("pages",8).getString(0));
             assertFalse(recipe.getList("pages",8).getString(0).startsWith("{"));
         }
+    }
+    @Test void masterLibrarianTradeCostsTwelveEmeraldsOnly() {
+        var offer=RetrainingManual.createLibrarianOffer();
+        assertTrue(offer.getBaseCostA().is(Items.EMERALD));
+        assertEquals(12,offer.getBaseCostA().getCount());
+        assertTrue(offer.getCostB().isEmpty());
+        assertTrue(RetrainingManual.isGenuine(offer.getResult()));
+        assertEquals(RetrainingManual.canonicalTag(),offer.getResult().getTag());
+        assertEquals(6,offer.getMaxUses());
+        assertEquals(30,offer.getXp());
+        assertEquals(0.05f,offer.getPriceMultiplier());
     }
 }

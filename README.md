@@ -3,15 +3,15 @@
 A public, server-only Forge mod for Minecraft 1.20.1. Players can pay to rebuild
 a villager's unlocked trade offers without replacing the villager or installing anything client-side.
 
-> **Current status:** 0.3.0 development candidate. The deployed 0.2 live test remains unchanged;
-> this one-click attack-gate UX is not deployed.
+> **Current status:** 0.3.1 development candidate. Live deployment and acceptance status are tracked
+> separately from this source README.
 
 ## Player experience
 
 1. Craft a genuine **Trade Retraining Manual** from eight emeralds surrounding one Book and Quill.
    The result carries a survival-unforgeable namespaced marker, gold name, and hidden-enchantment glint; renaming
-   an ordinary book cannot counterfeit it. Master librarians also sell one for eight emeralds plus
-   one Book and Quill (six uses, 30 villager XP, normal restocking).
+   an ordinary book cannot counterfeit it. Master librarians also sell one for a base price of
+   twelve emeralds only (six uses, 30 villager XP, normal discounts, demand, and restocking).
 2. Hold the Manual, sneak, and **left-click once** on an adult employed villager. Forge cancels the
    attack at its earliest hook, before damage, knockback, crits, sweep, fire, durability, exhaustion,
    statistics, villager panic/gossip, or golem anger.
@@ -85,7 +85,7 @@ No release should be published until the roadmap's gameplay and dedicated-server
 - [x] ForgeGradle/Java 17 project scaffold and server-only compatibility metadata
 - [x] Marker-authenticated fixed Manual payment policy
 - [x] Final vanilla+modded trade-pool snapshot and atomic offer-list builder
-- [x] Two-step interaction state machine and concurrency guard
+- [x] One-click attack gate and concurrency guard
 - [x] Feedback, cancellation hooks, and public cancellable pre-reroll event
 - [x] Unit tests for attack trigger, transaction messages, Manual NBT, and shuffle boundaries
 - [ ] GameTests for payment/mutation and villager-state preservation boundaries

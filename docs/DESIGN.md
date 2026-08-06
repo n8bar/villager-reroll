@@ -7,6 +7,9 @@ This document describes the implemented MVP and the remaining test boundary.
 ### Policy
 
 There is no gameplay config. Payment is exactly one server-authenticated Trade Retraining Manual.
+The crafting recipe remains eight emeralds around one writable book. Master librarians add one
+Manual trade at a base cost of twelve emeralds with no second ingredient, six uses, 30 villager XP,
+and a 0.05 price multiplier so normal reputation discounts and demand remain in force.
 
 ### Trade pool capture
 
@@ -66,7 +69,7 @@ gameplay code must not reference client-only classes or register a network chann
 
 ## Test matrix before calling it implemented
 
-- First click, expiry, wrong villager, wrong dimension, insufficient payment, and changed config.
+- Sneaking and non-sneaking Manual clicks, wrong villager, wrong dimension, and insufficient payment.
 - Novice through Master villagers: exactly 2/4/6/8/10 offers after reroll.
 - Name, UUID, profession/type/level/XP, gossip, brain, inventory, health, location, and restock fields
   byte-for-byte or semantically unchanged as appropriate; only offers differ.
