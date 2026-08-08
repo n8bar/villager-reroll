@@ -16,9 +16,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 final class RetrainingManual {
     private static final String MARKER = VillagerReroll.MOD_ID + ":trade_retraining_manual";
     static final String INSTRUCTIONS = "TRADE RETRAINING\n\n"
-            + "Sneak + left-click an adult employed villager.\n\n"
+            + "Sneak + left-click an adult employed villager\n"
+            + "or wandering trader.\n\n"
             + "One Manual is spent only when trades change.\n"
-            + "Unswappable trades stay.\n\n"
+            + "Unswappable villager trades stay.\n\n"
             + "Do not sign this book.";
     private RetrainingManual() { }
 

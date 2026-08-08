@@ -1,9 +1,9 @@
 # Villager Reroll
 
 A public, server-only Forge mod for Minecraft 1.20.1. Players can pay to rebuild
-a villager's unlocked trade offers without replacing the villager or installing anything client-side.
+villager or wandering-trader offers without replacing the trader or installing anything client-side.
 
-> **Current status:** 0.3.1 development candidate. Live deployment and acceptance status are tracked
+> **Current status:** 0.4.0 development candidate. Live deployment and acceptance status are tracked
 > separately from this source README.
 
 ## Player experience
@@ -12,16 +12,17 @@ a villager's unlocked trade offers without replacing the villager or installing 
    The result carries a survival-unforgeable namespaced marker, gold name, and hidden-enchantment glint; renaming
    an ordinary book cannot counterfeit it. Master librarians also sell one for a base price of
    twelve emeralds only (six uses, 30 villager XP, normal discounts, demand, and restocking).
-2. Hold the Manual, sneak, and **left-click once** on an adult employed villager. Forge cancels the
-   attack at its earliest hook, before damage, knockback, crits, sweep, fire, durability, exhaustion,
+2. Hold the Manual, sneak, and **left-click once** on an adult employed villager or wandering trader.
+   Forge cancels every attack made with a genuine Manual at its earliest hook, before
+   damage, knockback, crits, sweep, fire, durability, exhaustion,
    statistics, villager panic/gossip, or golem anger.
 3. The server builds one local plan, validates it before and after the public event, and spends one
    Manual only when at least one trade changes. Unswappable tiers keep serialized-equivalent trades.
-   Success gets restrained chat/sound feedback. Expiry or any failed check cancels without charge.
+   Success gets restrained chat/sound feedback. Any failed check cancels without charge.
 
-Normal right-click remains trading. Ordinary attacks and genuine-Manual attacks on non-villagers
-remain vanilla behavior. A non-sneaking Manual left-click on a villager is canceled without damage,
-payment, or retraining and reminds the player to sneak.
+Normal right-click remains trading and ordinary items retain vanilla attacks. A genuine Manual is
+harmless against every entity. A non-sneaking Manual left-click on a supported trader is canceled
+without damage, payment, or retraining and reminds the player to sneak.
 
 ## Exact state semantics
 
@@ -45,16 +46,22 @@ The new Manual trade makes the current Master-librarian cap 10. Pre-0.2 nine-off
 cannot use legacy partial inference against that new cap; they may still take a safe full reroll,
 which establishes the ledger, but any partial failure refuses until provenance is proven.
 
+A wandering trader reroll replaces its complete offer list from the finalized Forge pools using
+vanilla's shape: up to five distinct ordinary listings and one rare listing, each invoked once.
+Null or throwing listings are not retried. Only the existing offer list changes; UUID, health,
+position, inventory, despawn delay, wander target, leash and llama relationships, and all other
+entity state remain on the same trader.
+
 ## Safeguards
 
 - Dedicated-server authority only; no packet, screen, keybind, model, or client installation.
 - Handle Forge `AttackEntityEvent` at highest priority and cancel immediately for every genuine-Manual
-  attack on a villager; begin the transaction only when the player is sneaking.
+  attack against any entity; dispatch supported transactions only when the player is sneaking.
 - Require an adult `Villager`, a real profession (not unemployed or nitwit), and at least one unlocked
   tier. Reject dead/removed villagers and villagers already trading with another player.
 - Re-check villager identity, profession/level, range, line of sight, eligibility, full Offers NBT,
   event proposal, and genuine Manual before charging.
-- Reserve a villager during the final server-thread transaction so two players cannot both pay for
+- Reserve a trader during the final server-thread transaction so two players cannot both pay for
   the same reroll. Consume only after a complete replacement offer list has been built in memory.
 - Use bounded counts, registry-backed item parsing, and restrained logging.
 - Fire a cancellable mod event before payment/mutation so protection or economy integrations can veto.
