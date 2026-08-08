@@ -8,10 +8,21 @@ import net.minecraft.world.item.trading.MerchantOffers;
 import org.junit.jupiter.api.Test;
 
 class VillagerRerollServiceTest {
-    @Test void genuineManualNeverAttacksVillager() {
-        assertTrue(VillagerRerollService.shouldCancel(true,true));
-        assertFalse(VillagerRerollService.shouldCancel(false,true));
-        assertFalse(VillagerRerollService.shouldCancel(true,false));
+    @Test void genuineManualCancelsAgainstEveryEntity() {
+        assertTrue(VillagerRerollService.shouldCancel(true));
+        assertFalse(VillagerRerollService.shouldCancel(false));
+    }
+    @Test void alternateColorMappingIsUniformAndNeverKeepsCurrent() {
+        for(var current:net.minecraft.world.item.DyeColor.values()){
+            java.util.Set<net.minecraft.world.item.DyeColor> results=new java.util.HashSet<>();
+            for(int draw=0;draw<15;draw++)results.add(VillagerRerollService.differentColor(current,draw));
+            assertEquals(15,results.size());
+            assertFalse(results.contains(current));
+        }
+        assertThrows(IllegalArgumentException.class,()->VillagerRerollService.differentColor(
+                net.minecraft.world.item.DyeColor.WHITE,-1));
+        assertThrows(IllegalArgumentException.class,()->VillagerRerollService.differentColor(
+                net.minecraft.world.item.DyeColor.WHITE,15));
     }
     @Test void transactionRequiresSneakingAfterCancellation() {
         assertTrue(VillagerRerollService.shouldTransact(true,true,true));

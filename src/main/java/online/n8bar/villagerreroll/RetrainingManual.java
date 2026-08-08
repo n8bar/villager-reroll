@@ -16,9 +16,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 final class RetrainingManual {
     private static final String MARKER = VillagerReroll.MOD_ID + ":trade_retraining_manual";
     static final String INSTRUCTIONS = "TRADE RETRAINING\n\n"
-            + "Sneak + left-click an adult employed villager.\n\n"
+            + "Sneak + left-click an adult employed villager\n"
+            + "or wandering trader.\n\n"
             + "One Manual is spent only when trades change.\n"
-            + "Unswappable trades stay.\n\n"
+            + "Unswappable villager trades stay.\n\n"
             + "Do not sign this book.";
     private RetrainingManual() { }
 
@@ -63,8 +64,10 @@ final class RetrainingManual {
     @SubscribeEvent
     public static void addLibrarianTrade(VillagerTradesEvent event) {
         if (event.getType() != net.minecraft.world.entity.npc.VillagerProfession.LIBRARIAN) return;
-        event.getTrades().get(5).add((trader, random) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 8), new ItemStack(Items.WRITABLE_BOOK), create(),
-                6, 30, 0.05f));
+        event.getTrades().get(5).add((trader, random) -> createLibrarianOffer());
+    }
+
+    static MerchantOffer createLibrarianOffer() {
+        return new MerchantOffer(new ItemStack(Items.EMERALD, 12), create(), 6, 30, 0.05f);
     }
 }
